@@ -19,7 +19,7 @@ export default async function (ctx) {
   // ─── Fetch Data via SSH ─────────────────────
   let d;
   try {
-    const { host, username, password, privateKey, port } = ctx.env;
+    const { host, username, password, privateKey, port, refresh_interval, traffic_quota } = ctx.env;
     const session = await ctx.ssh.connect({
       host, port: Number(port || 22), username,
       ...(privateKey ? { privateKey } : { password }),
