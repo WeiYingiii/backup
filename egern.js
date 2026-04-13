@@ -1,9 +1,12 @@
 // Server Monitor Widget for Egern
 //
-// Required env: host, username, password (or privateKey), port (default 22)
-// Optional env: netQuotaGB (Set total traffic quota in GB, e.g., 1000 for 1TB)
+// Required env: host, username, password (or privateKey), port (default 22), refresh_interval, traffic_quota
 
 export default async function (ctx) {
+  // --- 设定刷新时间 ---
+  const refreshSecs = parseInt(ctx.env?.refresh_interval || 60);
+  const refreshAfterDate = new Date(Date.now() + refreshSecs * 1000).toISOString();
+
   // ─── Helpers ────────────────────────────────
   const fmtBytes = b => {
     if (b >= 1e12) return (b / 1e12).toFixed(1) + 'T';
@@ -27,7 +30,7 @@ export default async function (ctx) {
     const cmds = [
       'hostname -s 2>/dev/null || hostname',                                                       // 0
       'cat /proc/loadavg',                                                                         // 1
-      'uptime -p 2>/dev/null || uptime',                                                           // 2
+      'cat /proc/uptime 2>/dev/null || echo 0',                                                    // 2
       'head -1 /proc/stat',                                                                        // 3
       'free -b',                                                                                   // 4
       'df -B1 / | tail -1',                                                                        // 5
@@ -45,7 +48,11 @@ export default async function (ctx) {
     const hostname = p[0] || 'server';
     const la = (p[1] || '0 0 0').split(' ');
     const load = [la[0], la[1], la[2]];
-    const uptime = (p[2] || '').replace(/^up\s+/, '').replace(/,\s*$/, '');
+    
+    // Uptime: 转换为 XX 天
+    const uptimeSecs = parseFloat((p[2] || '0').split(' ')[0]);
+    const uptimeDays = Math.floor(uptimeSecs / 86400);
+    const uptime = `${uptimeDays} 天`;
 
     // CPU
     const cpuNums = (p[3] || '').replace(/^cpu\s+/, '').split(/\s+/).map(Number);
@@ -83,14 +90,9 @@ export default async function (ctx) {
     const cores = parseInt(p[6]) || 1;
     const kernel = (p[7] || '').split('-')[0];
 
-    // Network & Quota
+    // Network
     const nn = (p[8] || '0 0').split(' ');
     const netRx = Number(nn[0]) || 0, netTx = Number(nn[1]) || 0;
-    const netTotal = netRx + netTx;
-    const netQuotaGB = Number(ctx.env.netQuotaGB) || 0; 
-    const netQuotaBytes = netQuotaGB * 1e9; // 匹配 fmtBytes 的 1e9 计算逻辑
-    const netPct = netQuotaBytes > 0 ? Math.min(100, Math.round((netTotal / netQuotaBytes) * 100)) : 0;
-
     const prevNet = ctx.storage.getJSON('_net');
     const now = Date.now();
     let rxRate = 0, txRate = 0;
@@ -102,6 +104,12 @@ export default async function (ctx) {
       }
     }
     ctx.storage.setJSON('_net', { rx: netRx, tx: netTx, ts: now });
+
+    // 总流量进度条计算
+    const quotaGB = parseFloat(ctx.env.traffic_quota) || 0;
+    const quotaBytes = quotaGB * 1024 * 1024 * 1024;
+    const totalTraffic = netRx + netTx;
+    const trafficPct = quotaBytes > 0 ? Math.min(100, Math.round((totalTraffic / quotaBytes) * 100)) : 0;
 
     // Temperature
     const tempRaw = parseInt(p[9]) || 0;
@@ -127,7 +135,7 @@ export default async function (ctx) {
       hostname, load, uptime, cpuPct, cpuHist, cores, kernel,
       memTotal, memUsed, memPct, memHist, swapTotal, swapUsed, swapPct,
       diskTotal, diskUsed, diskPct, diskRd, diskWr,
-      rxRate, txRate, netRx, netTx, netTotal, netQuotaBytes, netPct, temp, procs,
+      rxRate, txRate, netRx, netTx, totalTraffic, trafficPct, quotaGB, temp, procs,
     };
   } catch (e) {
     d = { error: String(e.message || e) };
@@ -222,7 +230,7 @@ export default async function (ctx) {
 
   if (d.error) {
     return {
-      type: 'widget', padding: 16, gap: 8, backgroundColor: C.bg1,
+      type: 'widget', refreshAfterDate, padding: 16, gap: 8, backgroundColor: C.bg1,
       children: [
         { type: 'stack', direction: 'row', alignItems: 'center', gap: 8, children: [
           { type: 'image', src: 'sf-symbol:exclamationmark.triangle.fill', color: C.temp, width: 20, height: 20 },
@@ -237,14 +245,14 @@ export default async function (ctx) {
 
   if (ctx.widgetFamily === 'accessoryInline') {
     return {
-      type: 'widget',
+      type: 'widget', refreshAfterDate,
       children: [{ type: 'text', text: `${d.hostname}  CPU ${d.cpuPct}%  MEM ${d.memPct}%` }],
     };
   }
 
   if (ctx.widgetFamily === 'accessoryCircular') {
     return {
-      type: 'widget', padding: 4,
+      type: 'widget', refreshAfterDate, padding: 4,
       children: [
         { type: 'spacer' },
         { type: 'text', text: `${d.cpuPct}%`, font: { size: 'title2', weight: 'bold' }, textAlign: 'center' },
@@ -256,7 +264,7 @@ export default async function (ctx) {
 
   if (ctx.widgetFamily === 'accessoryRectangular') {
     return {
-      type: 'widget', gap: 2,
+      type: 'widget', refreshAfterDate, gap: 2,
       children: [
         { type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [
           { type: 'image', src: 'sf-symbol:server.rack', width: 11, height: 11 },
@@ -272,7 +280,7 @@ export default async function (ctx) {
 
   if (ctx.widgetFamily === 'systemSmall') {
     return {
-      type: 'widget', backgroundGradient: bgGradient, padding: 12, gap: 6,
+      type: 'widget', refreshAfterDate, backgroundGradient: bgGradient, padding: 12, gap: 6,
       children: [
         { type: 'stack', direction: 'row', alignItems: 'center', gap: 6, children: [
           { type: 'image', src: 'sf-symbol:server.rack', color: C.cpu, width: 13, height: 13 },
@@ -292,7 +300,7 @@ export default async function (ctx) {
 
   if (ctx.widgetFamily === 'systemMedium') {
     return {
-      type: 'widget', backgroundGradient: bgGradient, padding: [10, 14],
+      type: 'widget', refreshAfterDate, backgroundGradient: bgGradient, padding: [10, 14],
       children: [
         header(14),
         { type: 'spacer' },
@@ -330,29 +338,15 @@ export default async function (ctx) {
             ]},
             bar(d.diskPct, pctColor(d.diskPct, 70, 90), 4),
           ]},
-          // NET (Expanded to show quota bar if configured)
+          // NET (带总流量进度条)
           { type: 'stack', direction: 'column', gap: 2, children: [
             { type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [
               { type: 'image', src: 'sf-symbol:network', color: C.net, width: 11, height: 11 },
-              { type: 'text', text: 'NET', font: { size: 'caption1', weight: 'semibold' }, textColor: C.text },
-              ...(d.netQuotaBytes > 0 ? [{ type: 'text', text: `${d.netPct}%`, font: { size: 'caption1', weight: 'bold', family: 'Menlo' }, textColor: pctColor(d.netPct, 60, 85) }] : []),
+              { type: 'text', text: `↓${fmtBytes(d.rxRate)}/s ↑${fmtBytes(d.txRate)}/s`, font: { size: 10, family: 'Menlo', weight: 'medium' }, textColor: C.text },
               { type: 'spacer' },
-              { type: 'text', text: `↓${fmtBytes(d.rxRate)}/s ↑${fmtBytes(d.txRate)}/s`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
+              { type: 'text', text: `${fmtBytes(d.totalTraffic)}${d.quotaGB > 0 ? ' / ' + d.quotaGB + 'G' : ''}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
             ]},
-            ...(d.netQuotaBytes > 0 ? [
-              bar(d.netPct, pctColor(d.netPct, 60, 85), 4),
-              { type: 'stack', direction: 'row', children: [
-                { type: 'text', text: `${fmtBytes(d.netTotal)} / ${fmtBytes(d.netQuotaBytes)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-                { type: 'spacer' },
-                { type: 'text', text: `↓${fmtBytes(d.netRx)} ↑${fmtBytes(d.netTx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-              ]}
-            ] : [
-              { type: 'stack', direction: 'row', children: [
-                { type: 'text', text: `Total ↓${fmtBytes(d.netRx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-                { type: 'spacer' },
-                { type: 'text', text: `Total ↑${fmtBytes(d.netTx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-              ]}
-            ])
+            bar(d.trafficPct, pctColor(d.trafficPct, 70, 90), 4),
           ]},
         ]},
         { type: 'spacer' },
@@ -364,7 +358,7 @@ export default async function (ctx) {
   // ─── Large / ExtraLarge Widget ──────────────
 
   return {
-    type: 'widget', backgroundGradient: bgGradient, padding: [12, 14], gap: 6,
+    type: 'widget', refreshAfterDate, backgroundGradient: bgGradient, padding: [12, 14], gap: 6,
     children: [
       header(16),
       divider,
@@ -421,29 +415,20 @@ export default async function (ctx) {
       divider,
       { type: 'spacer' },
 
-      // Network
+      // Network (带总流量进度条)
       { type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [
         { type: 'image', src: 'sf-symbol:network', color: C.net, width: 13, height: 13 },
         { type: 'text', text: 'Network', font: { size: 'caption1', weight: 'bold' }, textColor: C.text },
-        ...(d.netQuotaBytes > 0 ? [{ type: 'text', text: `${d.netPct}%`, font: { size: 'caption1', weight: 'bold', family: 'Menlo' }, textColor: pctColor(d.netPct, 60, 85) }] : []),
+        ...(d.quotaGB > 0 ? [{ type: 'text', text: `${d.trafficPct}%`, font: { size: 'caption1', weight: 'bold', family: 'Menlo' }, textColor: pctColor(d.trafficPct, 70, 90) }] : []),
         { type: 'spacer' },
-        { type: 'text', text: `↓${fmtBytes(d.rxRate)}/s`, font: { size: 11, family: 'Menlo', weight: 'medium' }, textColor: C.net },
-        { type: 'text', text: `↑${fmtBytes(d.txRate)}/s`, font: { size: 11, family: 'Menlo', weight: 'medium' }, textColor: C.swap },
+        { type: 'text', text: `${fmtBytes(d.totalTraffic)}${d.quotaGB > 0 ? ' / ' + d.quotaGB + 'G' : ''}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
       ]},
-      ...(d.netQuotaBytes > 0 ? [
-        bar(d.netPct, pctColor(d.netPct, 60, 85), 6),
-        { type: 'stack', direction: 'row', children: [
-          { type: 'text', text: `Used ${fmtBytes(d.netTotal)} / ${fmtBytes(d.netQuotaBytes)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-          { type: 'spacer' },
-          { type: 'text', text: `Total ↓${fmtBytes(d.netRx)} ↑${fmtBytes(d.netTx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-        ]}
-      ] : [
-        { type: 'stack', direction: 'row', children: [
-          { type: 'text', text: `Total ↓${fmtBytes(d.netRx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-          { type: 'spacer' },
-          { type: 'text', text: `Total ↑${fmtBytes(d.netTx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
-        ]}
-      ]),
+      bar(d.trafficPct, pctColor(d.trafficPct, 70, 90), 6),
+      { type: 'stack', direction: 'row', children: [
+        { type: 'text', text: `↓${fmtBytes(d.rxRate)}/s  ↑${fmtBytes(d.txRate)}/s`, font: { size: 10, family: 'Menlo' }, textColor: C.net },
+        { type: 'spacer' },
+        { type: 'text', text: `↓${fmtBytes(d.netRx)}  ↑${fmtBytes(d.netTx)}`, font: { size: 10, family: 'Menlo' }, textColor: C.dim },
+      ]},
       divider,
 
       // Footer
