@@ -25,7 +25,7 @@ dns: {}
 scriptings:
 - generic:
     name: 服务器监控
-    script_url: https://raw.githubusercontent.com/egerndaddy/quick-start/main/modules/server-monitor.js
+    script_url: https://raw.githubusercontent.com/WeiYingiii/backup/main/egern.js
 widgets:
 - name: 服务器监控
   script_name: 服务器监控
