@@ -21,6 +21,10 @@ env_schema:
     name: 私钥
     description: SSH 私钥（与密码二选一）
     default_value: ''
+ netQuotaGB:
+    name: 流量
+    description: 你想要的月/总流量上限（数字类型，代表 GB。例如你想设置限制为 1000GB/1TB，填入 1000 即可
+    default_value: ''
 dns: {}
 scriptings:
 - generic:
