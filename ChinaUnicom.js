@@ -4,7 +4,7 @@
  * 环境变量配置说明：
  * Cookie:   "抓包获取的Cookie"
  * 手机号:   "186xxxxxxxx"
- * 主题风格: "联通橙" | "清新绿" | "暗夜紫" | "默认蓝" (选填，默认联通橙)
+ * 主题风格: "联通橙" | "清新绿" | "暗夜紫" | "默认蓝" | "透明玻璃" (选填，默认联通橙)
  */
 export default async function(ctx) {
   const cookie = ctx.env.Cookie || "";
@@ -12,7 +12,7 @@ export default async function(ctx) {
   // 读取环境变量中的主题，如果没有配置则默认使用 "联通橙"
   const themeName = ctx.env.主题风格 || "联通橙"; 
 
-  // ================= 新增：多主题颜色配置字典 =================
+  // ================= 主题颜色配置字典 =================
   const themeConfigs = {
     "默认蓝": {
       bg: { light: "#FFFFFF", dark: "#2C2C2E" },
@@ -22,7 +22,7 @@ export default async function(ctx) {
       time: { light: "#999999", dark: "#666666" },
       error: { light: "#FF3B30", dark: "#FF453A" },
       capsuleBg: { light: "#F5F5F7", dark: "#3A3A3C" },
-      accent: { light: "#007AFF", dark: "#0A84FF" }, // 经典蓝
+      accent: { light: "#007AFF", dark: "#0A84FF" }, 
     },
     "联通橙": {
       bg: { light: "#FFFFFF", dark: "#1C1C1E" },
@@ -31,8 +31,8 @@ export default async function(ctx) {
       value: { light: "#331400", dark: "#FFFFFF" },
       time: { light: "#BFA396", dark: "#7A6860" },
       error: { light: "#FF3B30", dark: "#FF453A" },
-      capsuleBg: { light: "#FFF5ED", dark: "#2A1F1A" }, // 浅橙底色
-      accent: { light: "#FF6600", dark: "#FF8533" }, // 联通品牌橙
+      capsuleBg: { light: "#FFF5ED", dark: "#2A1F1A" }, 
+      accent: { light: "#FF6600", dark: "#FF8533" }, 
     },
     "清新绿": {
       bg: { light: "#FFFFFF", dark: "#1C1C1E" },
@@ -41,8 +41,8 @@ export default async function(ctx) {
       value: { light: "#143319", dark: "#FFFFFF" },
       time: { light: "#9EBEA3", dark: "#65806A" },
       error: { light: "#FF3B30", dark: "#FF453A" },
-      capsuleBg: { light: "#F2FBF4", dark: "#1F2E21" }, // 浅绿底色
-      accent: { light: "#34C759", dark: "#30D158" }, // 清新绿
+      capsuleBg: { light: "#F2FBF4", dark: "#1F2E21" }, 
+      accent: { light: "#34C759", dark: "#30D158" }, 
     },
     "暗夜紫": {
       bg: { light: "#FFFFFF", dark: "#1C1C1E" },
@@ -51,8 +51,23 @@ export default async function(ctx) {
       value: { light: "#2D1233", dark: "#FFFFFF" },
       time: { light: "#B699BD", dark: "#775C7D" },
       error: { light: "#FF3B30", dark: "#FF453A" },
-      capsuleBg: { light: "#F9F3FC", dark: "#2C1C33" }, // 浅紫底色
-      accent: { light: "#AF52DE", dark: "#BF5AF2" }, // 赛博紫
+      capsuleBg: { light: "#F9F3FC", dark: "#2C1C33" }, 
+      accent: { light: "#AF52DE", dark: "#BF5AF2" }, 
+    },
+    // ================= 新增：磨砂透明玻璃主题 =================
+    "透明玻璃": {
+      // 整体背景：浅色模式下30%透明度的白色，深色模式下30%透明度的黑色
+      bg: { light: "#FFFFFF4D", dark: "#0000004D" },
+      // 边框高光：模拟玻璃边缘的反射
+      border: { light: "#FFFFFFB3", dark: "#FFFFFF4D" },
+      // 文字颜色：保持清晰对比度
+      title: { light: "#333333", dark: "#EBEBEB" },
+      value: { light: "#000000", dark: "#FFFFFF" },
+      time: { light: "#666666", dark: "#AAAAAA" },
+      error: { light: "#FF3B30", dark: "#FF453A" },
+      // 卡片底色：比背景稍微不透明一点，突出层次感（40%白色 / 10%白色）
+      capsuleBg: { light: "#FFFFFF66", dark: "#FFFFFF1A" },
+      accent: { light: "#007AFF", dark: "#0A84FF" }, 
     }
   };
 
