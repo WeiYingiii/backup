@@ -4,16 +4,34 @@
  * 环境变量配置说明：
  * Cookie:   "抓包获取的Cookie"
  * 手机号:   "186xxxxxxxx"
- * 主题风格: "联通橙" | "清新绿" | "暗夜紫" | "默认蓝" | "透明玻璃" (选填，默认联通橙)
+ * 主题风格: "透明玻璃" | "联通橙" | "清新绿" | "暗夜紫" | "默认蓝" (选填，默认透明玻璃)
  */
 export default async function(ctx) {
   const cookie = ctx.env.Cookie || "";
   const phone = ctx.env.手机号 || "";
-  // 读取环境变量中的主题，如果没有配置则默认使用 "联通橙"
-  const themeName = ctx.env.主题风格 || "联通橙"; 
+  // 读取环境变量中的主题，如果没有配置则默认使用 "透明玻璃"
+  const themeName = ctx.env.主题风格 || "透明玻璃"; 
+
+  // ================= 磨砂透明玻璃专属配置 =================
+  const glassTheme = {
+    // 整体背景设为全透明（00结尾），彻底去除纯白底色，完美透出壁纸
+    bg: { light: "#00000000", dark: "#00000000" },
+    // 边框保留极淡的微光，模拟玻璃边缘反射
+    border: { light: "#FFFFFF4D", dark: "#FFFFFF33" },
+    // 文字颜色：浅色模式下用深灰，深色模式下用亮白，保证清晰度
+    title: { light: "#333333", dark: "#EBEBEB" },
+    value: { light: "#1C1C1E", dark: "#FFFFFF" },
+    time: { light: "#666666", dark: "#AAAAAA" },
+    error: { light: "#FF3B30", dark: "#FF453A" },
+    // 胶囊卡片保留一定的半透明白/黑底色，凸显层次感（30%透明度 / 10%透明度）
+    capsuleBg: { light: "#FFFFFF4D", dark: "#FFFFFF1A" },
+    accent: { light: "#007AFF", dark: "#0A84FF" }, 
+  };
 
   // ================= 主题颜色配置字典 =================
   const themeConfigs = {
+    "透明玻璃": glassTheme,
+    "纯白背景": glassTheme, // 兼容处理：如果填写纯白背景，也展示为透明玻璃主题
     "默认蓝": {
       bg: { light: "#FFFFFF", dark: "#2C2C2E" },
       border: { light: "#E5E5EA", dark: "#3A3A3C" },
@@ -53,26 +71,11 @@ export default async function(ctx) {
       error: { light: "#FF3B30", dark: "#FF453A" },
       capsuleBg: { light: "#F9F3FC", dark: "#2C1C33" }, 
       accent: { light: "#AF52DE", dark: "#BF5AF2" }, 
-    },
-    // ================= 新增：磨砂透明玻璃主题 =================
-    "透明玻璃": {
-      // 整体背景：浅色模式下30%透明度的白色，深色模式下30%透明度的黑色
-      bg: { light: "#FFFFFF4D", dark: "#0000004D" },
-      // 边框高光：模拟玻璃边缘的反射
-      border: { light: "#FFFFFFB3", dark: "#FFFFFF4D" },
-      // 文字颜色：保持清晰对比度
-      title: { light: "#333333", dark: "#EBEBEB" },
-      value: { light: "#000000", dark: "#FFFFFF" },
-      time: { light: "#666666", dark: "#AAAAAA" },
-      error: { light: "#FF3B30", dark: "#FF453A" },
-      // 卡片底色：比背景稍微不透明一点，突出层次感（40%白色 / 10%白色）
-      capsuleBg: { light: "#FFFFFF66", dark: "#FFFFFF1A" },
-      accent: { light: "#007AFF", dark: "#0A84FF" }, 
     }
   };
 
-  // 根据选择获取颜色配置，如果找不到对应名称则回退到"默认蓝"
-  const colors = themeConfigs[themeName] || themeConfigs["默认蓝"];
+  // 获取颜色配置，默认回退到透明玻璃
+  const colors = themeConfigs[themeName] || glassTheme;
   // ==========================================================
 
   let data = {
