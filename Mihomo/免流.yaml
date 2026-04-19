@@ -106,8 +106,8 @@ proxy-providers:
 FilterCN: &FilterCN '^(?=.*((?i)mll))(?=.*((?i)🇨🇳|中国|国内|北京|上海|广州|深圳|(\b(CN|China)\b))).*$'
 FilterJP: &FilterJP '^(?=.*((?i)ml))(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|Japan)\b))).*$'
 FilterUS: &FilterUS '^(?=.*((?i)ml))(?=.*((?i)🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|United States)\b))).*$'
-FilterDE: &FilterDE '^(?=.*((?i)mll’))(?=.*((?i)🇩🇪|德国|(\b(DE|Germany)\b))).*$'
-FilterGame: &FilterGame '^(?=.*((?i)ml))(?=.*((?i)游戏|🎮|(\b(GAME)\b)))(?!.*((?i)回国|校园)).*$'
+FilterDE: &FilterDE '^(?=.*((?i)mll))(?=.*((?i)🇩🇪|德国|(\b(DE|Germany)\b))).*$'
+FilterGame: &FilterGame '^(?=.*((?i)ml))(?=.*((?i)CN-mll|🎮|(\b(GAME)\b)))(?!.*((?i)回国|校园)).*$'
 # 排除规则同时也限定必须包含 ml
 FilterAll: &FilterAll '^(?=.*((?i)ml))(?!.*((?i)群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author)\b|(\d{4}-\d{2}-\d{2}|\d+G)))).*$'
 
@@ -121,13 +121,16 @@ proxy-groups:
   - {name: China, type: select, proxies: [🇨🇳 中国节点], icon: 'https://raw.githubusercontent.com/pompurin404/mihomo-party/master/resources/icon.png'}
   - {name: Proxy, type: url-test, url: 'http://connectivitycheck.gstatic.com/generate_204', interval: 300, proxies: [🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/pompurin404/mihomo-party/master/resources/icon.png'}
   - {name: Apple, type: select, proxies: [DIRECT, Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png'}
-  - {name: OpenAI, type: select, include-all: true, filter: *FilterUS, icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
+  - {name: OpenAI, type: select, include-all: true, filter: *FilterAll, icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
   - {name: Telegram, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png'}
   - {name: Netflix, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png'}
+  - {name: Emby, type: select, proxies: [🇩🇪 德国节点, 🇺🇸 美国节点, DIRECT], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png'}
   - {name: Disney+, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png'}
   - {name: YouTube, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png'}
+  - {name: Google, type: select, proxies: [🇺🇸 美国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google.png'}
   - {name: TikTok, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png'}
   - {name: Spotify, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png'}
+  - {name: Speedtest, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png'}
   - {name: Gamer, type: select, include-all: true, filter: *FilterGame, proxies: [DIRECT, Proxy], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png'}
   - {name: Microsoft, type: select, proxies: [DIRECT, Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png'}
   - {name: GlobalMedia, type: select, proxies: [Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png'}
@@ -142,8 +145,10 @@ rule-providers:
   GlobalMedia: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml', path: './RuleSet/GlobalMedia.yaml'}
   ChinaMedia: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMedia/ChinaMedia.yaml', path: './RuleSet/ChinaMedia.yaml'}
   Netflix: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix_Classical_No_Resolve.yaml', path: './RuleSet/Netflix.yaml'}
+  Emby: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml', path: './RuleSet/Emby.yaml'}
   Disney+: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Disney/Disney_No_Resolve.yaml', path: './RuleSet/Disney+.yaml'}
   YouTube: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube_No_Resolve.yaml', path: './RuleSet/YouTube.yaml'}
+  Google: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google_No_Resolve.yaml', path: './RuleSet/Google.yaml'}
   Apple: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple_Classical_No_Resolve.yaml', path: './RuleSet/Apple.yaml'}
   Microsoft: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft_No_Resolve.yaml', path: './RuleSet/Microsoft.yaml'}
   Nintendo: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nintendo/Nintendo.yaml', path: './RuleSet/Nintendo.yaml'}
@@ -156,15 +161,22 @@ rule-providers:
   Proxy: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy_Classical_No_Resolve.yaml', path: './RuleSet/Proxy.yaml'}
   China: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_Classical.yaml', path: './RuleSet/China.yaml'}
   LAN: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Lan/Lan.yaml', path: './RuleSet/LAN.yaml'}
+  SpeedtestChina: {<<: *RuleSet, url: 'https://kelee.one/Tool/Clash/Rule/SpeedtestChina.yaml', path: './RuleSet/SpeedtestChina.yaml'}
+  SpeedtestInternational: {<<: *RuleSet, url: 'https://kelee.one/Tool/Clash/Rule/SpeedtestInternational.yaml', path: './RuleSet/SpeedtestInternational.yaml'}
 
 # 分流规则
 rules:
+ - DOMAIN-KEYWORD,fd.148918.xyz,Emby
+ - RULE-SET,Emby,Emby
  - RULE-SET,Apple,Apple
  - RULE-SET,Spotify,Spotify
  - RULE-SET,TikTok,TikTok
  - RULE-SET,Netflix,Netflix
  - RULE-SET,Disney+,Disney+
  - RULE-SET,YouTube,YouTube
+ - RULE-SET,Google,Google
+ - RULE-SET,SpeedtestChina,China
+ - RULE-SET,SpeedtestInternational,Speedtest
  - RULE-SET,ChinaMedia,China
  - RULE-SET,GlobalMedia,GlobalMedia
  - RULE-SET,Nintendo,Gamer
