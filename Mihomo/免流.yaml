@@ -1,138 +1,180 @@
-mixed-port: 7897
+# 深巷有喵的「Clash_Max」配置 - 优化版 (仅保留包含 ml 的节点)
+# 日期：2025-07-05
+# 版本：2.2.0
+# 配置作者：https://github.com/Rabbit-Spec
+# 适用版本：所有使用 Mihomo 内核的程序
+
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+redir-port: 7893
+tproxy-port: 7894
+
+unified-delay: true
+geodata-mode: false
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+tcp-concurrent: true
+find-process-mode: strict
+global-client-fingerprint: chrome
+
 allow-lan: true
 mode: rule
 log-level: info
-unified-delay: true
-tcp-concurrent: true
-find-process-mode: strict
+ipv6: true
+udp: true
 
-dns:
-  enable: true
-  listen: "127.0.0.1:5335"
-  use-system-hosts: false
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  default-nameserver: [180.76.76.76, 182.254.118.118, 8.8.8.8, 180.184.2.2]
-  nameserver: [180.76.76.76, 119.29.29.29, 180.184.1.1, 223.5.5.5, 8.8.8.8, "https://223.6.6.6/dns-query#h3=true", "https://dns.alidns.com/dns-query", "https://cloudflare-dns.com/dns-query", "https://doh.pub/dns-query"]
-  fallback: ["https://000000.dns.nextdns.io/dns-query#h3=true", "https://dns.alidns.com/dns-query", "https://doh.pub/dns-query", "https://public.dns.iij.jp/dns-query", "https://101.101.101.101/dns-query", "https://208.67.220.220/dns-query", "tls://8.8.4.4", "tls://1.0.0.1:853", "https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
-  fallback-filter: 
-    geoip: true
-    ipcidr: [240.0.0.0/4, 0.0.0.0/32, 127.0.0.1/32]
-    domain: ["+.google.com", "+.facebook.com", "+.twitter.com", "+.youtube.com", "+.xn--ngstr-lra8j.com", "+.google.cn", "+.googleapis.cn", "+.googleapis.com", "+.gvt1.com"]
-  fake-ip-filter: ["*.lan", "stun.*.*.*", "stun.*.*", time.windows.com, time.nist.gov, time.apple.com, time.asia.apple.com, "*.ntp.org.cn", "*.openwrt.pool.ntp.org", time1.cloud.tencent.com, time.ustc.edu.cn, pool.ntp.org, ntp.ubuntu.com, ntp.aliyun.com, ntp1.aliyun.com, ntp2.aliyun.com, ntp3.aliyun.com, ntp4.aliyun.com, ntp5.aliyun.com, ntp6.aliyun.com, ntp7.aliyun.com, time1.aliyun.com, time2.aliyun.com, time3.aliyun.com, time4.aliyun.com, time5.aliyun.com, time6.aliyun.com, time7.aliyun.com, "*.time.edu.cn", time1.apple.com, time2.apple.com, time3.apple.com, time4.apple.com, time5.apple.com, time6.apple.com, time7.apple.com, time1.google.com, time2.google.com, time3.google.com, time4.google.com, music.163.com, "*.music.163.com", "*.126.net", musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, "*.kuwo.cn", api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, "*.y.qq.com", streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, "*.xiami.com", "*.music.migu.cn", music.migu.cn, "*.msftconnecttest.com", "*.msftncsi.com", localhost.ptlogin2.qq.com, "*.*.*.srv.nintendo.net", "*.*.stun.playstation.net", "xbox.*.*.microsoft.com", "*.ipv6.microsoft.com", "*.*.xboxlive.com", speedtest.cros.wr.pvp.net]
+external-controller: 0.0.0.0:9090
+
+geox-url:
+  mmdb: 'https://geodata.kelee.one/Country-Masaiki.mmdb'
+  asn: 'https://geodata.kelee.one/GeoLite2-ASN-P3TERX.mmdb'
 
 profile:
   store-selected: true
-  store-fake-ip: false
+  store-fake-ip: true
 
 sniffer:
   enable: true
+  force-dns-mapping: true
   parse-pure-ip: true
+  override-destination: true
   sniff:
-    HTTP: {ports: [80, 8080-8880], override-destination: true}
-    QUIC: {ports: [443, 8443]}
-    TLS: {ports: [443, 8443]}
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  force-domain:
+    - +.v2ex.com
 
-geodata-mode: true
-geo-auto-update: true
-geodata-loader: standard
-geo-update-interval: 24
-geox-url:
-  geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
-  geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
-  mmdb: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb
-  asn: https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb
+  skip-domain:
+    - Mijia Cloud
 
-# ================= 引入你的订阅链接 =================
-proxy-providers:
-  my-sub:
-    type: http
-    url: "https://你的订阅链接地址请填在这里" # <--- 修改这里
-    interval: 3600
-    path: ./proxies/my-sub.yaml
-    health-check:
-      enable: true
-      interval: 300
-      url: "https://www.gstatic.com/generate_204"
+tun:
+  enable: true
+  stack: system
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
 
-# ================= 策略组深度精简 =================
-proxy-groups:
-  - name: "🧩 🇺🇳国外免流"
-    type: url-test
-    use: [my-sub]
-    filter: "(?i)ml"          # 包含 ml (不区分大小写)
-    exclude-filter: "(?i)cn"  # 排除 cn
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
+# P2P下载端口
+listeners:
+- name: socks5-in-1
+  type: socks
+  port: 10808
+  listen: 0.0.0.0
+  udp: true
+  users: []
+  proxy: DIRECT
 
-  - name: "🧩 🇨🇳国内免流"
-    type: url-test
-    use: [my-sub]
-    filter: "(?i)cn"          # 只保留包含 cn
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
+dns:
+  enable: true
+  prefer-h3: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter:
+    - "*"
+    - +.lan
+  default-nameserver:
+    - 223.5.5.5
+    - 223.6.6.6
+  nameserver:
+    - https://223.5.5.5/dns-query
+    - https://223.6.6.6/dns-query
 
-  - name: "🧩 🎬emby"
-    type: url-test
-    use: [my-sub]
-    filter: "(?i)ml"             # 包含 ml
-    exclude-filter: "(?i)cn|jp"  # 排除 cn 和 jp
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
+proxies:
 
-  - name: "🛑 广告拦截"
-    type: select
-    proxies: [REJECT, DIRECT]
+# 锚点 - 节点订阅的参数
+NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'http://connectivitycheck.gstatic.com/generate_204', interval: 60}}
 
-# ================= 规则集保持不变 =================
+# 锚点 - 节点订阅
+proxy-providers: 
+  我的节点:
+    url: '订阅链接'
+    <<: *NodeParam
+    path: './proxy_provider/Providers.yaml'
+
+# 锚点 - 节点筛选组 (每个正则都加入了 ml 筛选)
+# 说明: (?=.*((?i)ml)) 表示节点名必须包含 ml (不区分大小写)
+FilterCN: &FilterCN '^(?=.*((?i)mll))(?=.*((?i)🇨🇳|中国|国内|北京|上海|广州|深圳|(\b(CN|China)\b))).*$'
+FilterJP: &FilterJP '^(?=.*((?i)ml))(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|Japan)\b))).*$'
+FilterUS: &FilterUS '^(?=.*((?i)ml))(?=.*((?i)🇺🇸|美国|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|United States)\b))).*$'
+FilterDE: &FilterDE '^(?=.*((?i)mll’))(?=.*((?i)🇩🇪|德国|(\b(DE|Germany)\b))).*$'
+FilterGame: &FilterGame '^(?=.*((?i)ml))(?=.*((?i)游戏|🎮|(\b(GAME)\b)))(?!.*((?i)回国|校园)).*$'
+# 排除规则同时也限定必须包含 ml
+FilterAll: &FilterAll '^(?=.*((?i)ml))(?!.*((?i)群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author)\b|(\d{4}-\d{2}-\d{2}|\d+G)))).*$'
+
+# 锚点 - 故障转移参数
+FallBack: &FallBack {type: fallback, interval: 10, lazy: true, url: 'http://connectivitycheck.gstatic.com/generate_204', disable-udp: false, timeout: 3000, max-failed-times: 3, hidden: true, include-all-providers: true}
+# 锚点 - 规则参数
+RuleSet: &RuleSet {type: http, behavior: classical, interval: 86400, format: yaml, proxy: Proxy}
+
+# 策略组
+proxy-groups: 
+  - {name: China, type: select, proxies: [🇨🇳 中国节点], icon: 'https://raw.githubusercontent.com/pompurin404/mihomo-party/master/resources/icon.png'}
+  - {name: Proxy, type: select, proxies: [🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/pompurin404/mihomo-party/master/resources/icon.png'}
+  - {name: Apple, type: select, proxies: [DIRECT, Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png'}
+  - {name: OpenAI, type: select, include-all: true, filter: *FilterAll, icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
+  - {name: Telegram, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png'}
+  - {name: Netflix, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png'}
+  - {name: Disney+, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png'}
+  - {name: YouTube, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png'}
+  - {name: TikTok, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png'}
+  - {name: Spotify, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png'}
+  - {name: Gamer, type: select, include-all: true, filter: *FilterGame, proxies: [DIRECT, Proxy], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png'}
+  - {name: Microsoft, type: select, proxies: [DIRECT, Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png'}
+  - {name: GlobalMedia, type: select, proxies: [Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png'}
+
+  - {name: 🇨🇳 中国节点, <<: *FallBack, filter: *FilterCN}
+  - {name: 🇯🇵 日本节点, <<: *FallBack, filter: *FilterJP}
+  - {name: 🇺🇸 美国节点, <<: *FallBack, filter: *FilterUS}
+  - {name: 🇩🇪 德国节点, <<: *FallBack, filter: *FilterDE}
+
+# 订阅规则
 rule-providers:
-  category-ads-all: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ads-all.mrs", path: ./ruleset/category-ads-all.mrs, interval: 86400, format: mrs}
-  private: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/private.mrs", path: ./ruleset/private.mrs, interval: 86400, format: mrs}
-  private-ip: {type: http, behavior: ipcidr, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/private.mrs", path: ./ruleset/private-ip.mrs, interval: 86400, format: mrs}
-  geolocation-cn: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/geolocation-cn.mrs", path: ./ruleset/geolocation-cn.mrs, interval: 86400, format: mrs}
-  cn-ip: {type: http, behavior: ipcidr, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs", path: ./ruleset/cn-ip.mrs, interval: 86400, format: mrs}
-  geolocation-!cn: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/geolocation-!cn.mrs", path: "./ruleset/geolocation-!cn.mrs", interval: 86400, format: mrs}
-  category-ai-chat-!cn: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-chat-!cn.mrs", path: "./ruleset/category-ai-chat-!cn.mrs", interval: 86400, format: mrs}
-  openai: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/openai.mrs", path: ./ruleset/openai.mrs, interval: 86400, format: mrs}
-  anthropic: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/anthropic.mrs", path: ./ruleset/anthropic.mrs, interval: 86400, format: mrs}
-  youtube: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/youtube.mrs", path: ./ruleset/youtube.mrs, interval: 86400, format: mrs}
-  google: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/google.mrs", path: ./ruleset/google.mrs, interval: 86400, format: mrs}
-  google-ip: {type: http, behavior: ipcidr, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/google.mrs", path: ./ruleset/google-ip.mrs, interval: 86400, format: mrs}
-  apple: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple.mrs", path: ./ruleset/apple.mrs, interval: 86400, format: mrs}
-  icloud: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/icloud.mrs", path: ./ruleset/icloud.mrs, interval: 86400, format: mrs}
-  telegram: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs", path: ./ruleset/telegram.mrs, interval: 86400, format: mrs}
-  telegram-ip: {type: http, behavior: ipcidr, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/telegram.mrs", path: ./ruleset/telegram-ip.mrs, interval: 86400, format: mrs}
-  cn: {type: http, behavior: domain, url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cn.mrs", path: ./ruleset/cn.mrs, interval: 86400, format: mrs}
+  GlobalMedia: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml', path: './RuleSet/GlobalMedia.yaml'}
+  ChinaMedia: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMedia/ChinaMedia.yaml', path: './RuleSet/ChinaMedia.yaml'}
+  Netflix: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix_Classical_No_Resolve.yaml', path: './RuleSet/Netflix.yaml'}
+  Disney+: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Disney/Disney_No_Resolve.yaml', path: './RuleSet/Disney+.yaml'}
+  YouTube: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube_No_Resolve.yaml', path: './RuleSet/YouTube.yaml'}
+  Apple: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple_Classical_No_Resolve.yaml', path: './RuleSet/Apple.yaml'}
+  Microsoft: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft_No_Resolve.yaml', path: './RuleSet/Microsoft.yaml'}
+  Nintendo: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nintendo/Nintendo.yaml', path: './RuleSet/Nintendo.yaml'}
+  PlayStation: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/PlayStation/PlayStation.yaml', path: './RuleSet/PlayStation.yaml'}
+  Epic: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.yaml', path: './RuleSet/Epic.yaml'}
+  Xbox: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Xbox/Xbox.yaml', path: './RuleSet/Xbox.yaml'}
+  TikTok: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok_No_Resolve.yaml', path: './RuleSet/TikTok.yaml'}
+  Spotify: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml', path: './RuleSet/Spotify.yaml'}
+  OpenAI: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI_No_Resolve.yaml', path: './RuleSet/OpenAI.yaml'}
+  Proxy: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy_Classical_No_Resolve.yaml', path: './RuleSet/Proxy.yaml'}
+  China: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_Classical.yaml', path: './RuleSet/China.yaml'}
+  LAN: {<<: *RuleSet, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Lan/Lan.yaml', path: './RuleSet/LAN.yaml'}
 
-# ================= 路由规则重构 =================
+# 分流规则
 rules:
-  # 优先处理广告和局域网
-  - RULE-SET,category-ads-all,🛑 广告拦截
-  - RULE-SET,private,DIRECT
-  - RULE-SET,private-ip,DIRECT,no-resolve
-  
-  # Emby 专属策略
-  - DOMAIN-KEYWORD,emby,🧩 🎬emby
-  - DOMAIN,fd.148918.xyz,🧩 🎬emby
-
-  # 国外规则 -> 国外免流
-  - DOMAIN-KEYWORD,cloudflare,🧩 🇺🇳国外免流
-  - RULE-SET,category-ai-chat-!cn,🧩 🇺🇳国外免流
-  - RULE-SET,openai,🧩 🇺🇳国外免流
-  - RULE-SET,anthropic,🧩 🇺🇳国外免流
-  - RULE-SET,youtube,🧩 🇺🇳国外免流
-  - RULE-SET,google,🧩 🇺🇳国外免流
-  - RULE-SET,google-ip,🧩 🇺🇳国外免流,no-resolve
-  - RULE-SET,telegram,🧩 🇺🇳国外免流
-  - RULE-SET,telegram-ip,🧩 🇺🇳国外免流,no-resolve
-  - RULE-SET,apple,🧩 🇺🇳国外免流
-  - RULE-SET,geolocation-!cn,🧩 🇺🇳国外免流
-
-  # 国内规则 -> 国内免流
-  - RULE-SET,icloud,🧩 🇨🇳国内免流
-  - RULE-SET,geolocation-cn,🧩 🇨🇳国内免流
-  - RULE-SET,cn-ip,🧩 🇨🇳国内免流,no-resolve
-  - RULE-SET,cn,🧩 🇨🇳国内免流
-
-  # 兜底规则 -> 国外免流
-  - MATCH,🧩 🇺🇳国外免流
+ - RULE-SET,Apple,Apple
+ - RULE-SET,Spotify,Spotify
+ - RULE-SET,TikTok,TikTok
+ - RULE-SET,Netflix,Netflix
+ - RULE-SET,Disney+,Disney+
+ - RULE-SET,YouTube,YouTube
+ - RULE-SET,ChinaMedia,China
+ - RULE-SET,GlobalMedia,GlobalMedia
+ - RULE-SET,Nintendo,Gamer
+ - RULE-SET,PlayStation,Gamer
+ - RULE-SET,Epic,Gamer
+ - RULE-SET,Xbox,Gamer
+ - RULE-SET,OpenAI,OpenAI
+ - RULE-SET,Microsoft,Microsoft
+ - RULE-SET,Proxy,Proxy
+ - RULE-SET,LAN,DIRECT
+ - RULE-SET,China,China
+ - GEOIP,CN,China
+ - MATCH,Proxy
