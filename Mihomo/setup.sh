@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # ==========================================================
-# OpenClash 直连流量监控脚本 (GitHub 一键版)
+# OpenClash 直连流量监控脚本 (交互面板版)
 # ==========================================================
 
 SCRIPT_PATH="/usr/bin/oc_direct_check.sh"
@@ -12,38 +12,41 @@ CRON_CONF="/etc/crontabs/root"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 
 # --- 卸载函数 ---
 do_uninstall() {
-    echo -e "${BLUE}[1/3]${NC} 正在停止并移除定时任务..."
+    echo -e "\n${BLUE}>>> 正在卸载 <<<${NC}"
+    echo -e "1. 正在停止并移除定时任务..."
     sed -i "/oc_direct_check.sh/d" "$CRON_CONF"
     /etc/init.d/cron restart
     
-    echo -e "${BLUE}[2/3]${NC} 正在删除脚本文件..."
+    echo -e "2. 正在删除脚本和日志文件..."
     rm -f "$SCRIPT_PATH"
     rm -f "$LOG_FILE"
     
-    echo -e "${GREEN}[OK]${NC} 卸载完成！"
+    echo -e "${GREEN}[OK] 卸载完成！${NC}\n"
 }
 
 # --- 安装函数 ---
 do_install() {
-    echo -e "${BLUE}>>> 基础配置获取 <<<${NC}"
-    read -p "请输入 OpenClash API 密钥 (无则回车): " API_SECRET
+    echo -e "\n${BLUE}>>> 开始配置与安装 <<<${NC}"
+    read -p "请输入 OpenClash API 密钥 (无密码请直接回车): " API_SECRET
     read -p "请输入 TG Bot Token (必填): " TG_TOKEN
     read -p "请输入 TG Chat ID (必填): " TG_CHAT_ID
 
     if [ -z "$TG_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then
-        echo -e "${RED}❌ 错误: Token 和 Chat ID 不能为空！${NC}"
-        exit 1
+        echo -e "${RED}❌ 错误: Token 和 Chat ID 不能为空！返回主菜单。${NC}"
+        sleep 2
+        return
     fi
 
-    echo -e "\n${BLUE}[1/4]${NC} 正在安装依赖 (curl, jq)..."
+    echo -e "\n${YELLOW}[1/4]${NC} 正在安装依赖 (curl, jq)..."
     opkg update >/dev/null 2>&1
     opkg install curl jq >/dev/null 2>&1
 
-    echo -e "${BLUE}[2/4]${NC} 正在生成监控脚本..."
+    echo -e "${YELLOW}[2/4]${NC} 正在生成监控核心脚本..."
     cat << 'EOF' > "$SCRIPT_PATH"
 #!/bin/sh
 API_URL="http://127.0.0.1:9090"
@@ -57,7 +60,11 @@ THRESHOLD=10485760
 RECORD_FILE="/tmp/clash_direct_alerted.log"
 touch "$RECORD_FILE"
 
-API_RES=$(curl -s -H "Authorization: Bearer $API_SECRET" "$API_URL/connections")
+if [ -n "$API_SECRET" ]; then
+    API_RES=$(curl -s -H "Authorization: Bearer $API_SECRET" "$API_URL/connections")
+else
+    API_RES=$(curl -s "$API_URL/connections")
+fi
 [ -z "$API_RES" ] && exit 0
 
 DATA=$(echo "$API_RES" | jq -r --argjson limit "$THRESHOLD" \
@@ -93,25 +100,43 @@ EOF
     sed -i "s/REPLACE_TG_CHAT_ID/$TG_CHAT_ID/g" "$SCRIPT_PATH"
     chmod +x "$SCRIPT_PATH"
 
-    echo -e "${BLUE}[3/4]${NC} 正在设置定时任务 (每分钟执行)..."
+    echo -e "${YELLOW}[3/4]${NC} 正在配置定时任务 (每分钟检测)..."
     sed -i "/oc_direct_check.sh/d" "$CRON_CONF"
     echo "* * * * * $SCRIPT_PATH >/dev/null 2>&1" >> "$CRON_CONF"
     /etc/init.d/cron restart
 
-    echo -e "${GREEN}[4/4]${NC} 安装成功！脚本位置: $SCRIPT_PATH"
+    echo -e "${GREEN}[4/4] 安装配置成功！系统将每分钟自动检测流量。${NC}\n"
 }
 
-# --- 主逻辑 ---
-case "$1" in
-    install)
-        do_install
-        ;;
-    uninstall)
-        do_uninstall
-        ;;
-    *)
-        echo -e "${BLUE}用法:${NC}"
-        echo "  安装: sh setup.sh install"
-        echo "  卸载: sh setup.sh uninstall"
-        ;;
-esac
+# --- 交互面板主循环 ---
+while true; do
+    clear
+    echo -e "${BLUE}====================================================${NC}"
+    echo -e "${GREEN}       OpenClash 直连流量监控 TG 告警管理面板       ${NC}"
+    echo -e "${BLUE}====================================================${NC}"
+    echo "  1. 安装 或 重新配置监控脚本"
+    echo "  2. 卸载 监控脚本"
+    echo "  0. 退出脚本"
+    echo -e "${BLUE}====================================================${NC}"
+    
+    read -p "请输入数字选择操作 [0-2]: " choice
+    
+    case "$choice" in
+        1)
+            do_install
+            read -p "按回车键继续..."
+            ;;
+        2)
+            do_uninstall
+            read -p "按回车键继续..."
+            ;;
+        0)
+            echo -e "\n退出脚本。祝使用愉快！\n"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}输入无效，请重新输入！${NC}"
+            sleep 1
+            ;;
+    esac
+done
