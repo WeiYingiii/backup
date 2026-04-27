@@ -142,7 +142,7 @@ proxy-groups:
   - {name: TikTok, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png'}
   - {name: Spotify, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png'}
   - {name: Speedtest, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png'}
-  - {name: Gamer, type: select, include-all: true, filter: *FilterGame, proxies: [DIRECT, Proxy, 🇨🇳 中国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png'}
+  - {name: Gamer, type: select, include-all: true, filter: *FilterGame, proxies: [DIRECT, 🇨🇳 中国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png'}
   - {name: Microsoft, type: select, proxies: [DIRECT, Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png'}
   - {name: GlobalMedia, type: select, proxies: [Proxy, 🇨🇳 中国节点, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png'}
 
