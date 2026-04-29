@@ -183,7 +183,7 @@ rules:
  - DOMAIN-SUFFIX,tmall.com,DIRECT
  - DOMAIN-SUFFIX,alicdn.com,DIRECT
  - DOMAIN-SUFFIX,alipayobjects.com,DIRECT
- - DOMAIN-SUFFIX,amap.com,DIRECT
+ - DOMAIN-SUFFIX,cloudflare.com,DIRECT
  - DOMAIN-SUFFIX,12306.cn,DIRECT
  - RULE-SET,Emby,Emby
  - RULE-SET,Apple,Apple
