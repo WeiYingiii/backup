@@ -133,7 +133,7 @@ proxy-groups:
   - {name: OpenAI, type: select, proxies: [🇺🇸 美国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
   - {name: Telegram, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png'}
   - {name: Netflix, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png'}
-  - {name: Emby, type: select, proxies: [🇩🇪 德国节点, 🇺🇸 美国节点, 🇨🇳 中国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png'}
+  - {name: Emby, type: select, proxies: [🇩🇪 德国节点, 🇺🇸 美国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png'}
   - {name: Disney+, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png'}
   - {name: YouTube, type: select, proxies: [Proxy, 🇯🇵 日本节点, 🇺🇸 美国节点, 🇩🇪 德国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png'}
   - {name: Google, type: select, proxies: [🇺🇸 美国节点], icon: 'https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google.png'}
@@ -183,7 +183,7 @@ rules:
   - DOMAIN-SUFFIX,alipay.com,DIRECT
   - DOMAIN-SUFFIX,tmall.com,DIRECT
   - DOMAIN-SUFFIX,alicdn.com,DIRECT
-  - DOMAIN-SUFFIX,alipayobjects.com,DIRECT
+  - DOMAIN-SUFFIX,cloudflare.com,DIRECT
   - DOMAIN-SUFFIX,amap.com,DIRECT
   - DOMAIN-SUFFIX,12306.cn,DIRECT
   - RULE-SET,Emby,Emby
